@@ -1,11 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import { Divider, Menu } from "antd";
+import { Menu } from "antd";
 import axios from "axios";
 import { context } from "../store";
 import { useHistory, useLocation } from "react-router-dom";
 import MenuItem from "antd/lib/menu/MenuItem";
 import { JoinPath } from "../utils/path";
-
 const { SubMenu } = Menu;
 
 type SidebarItem = {
@@ -15,10 +14,13 @@ type SidebarItem = {
 };
 
 const Sidebar = (): JSX.Element => {
-  const [sidebarData, setSidebarData] = useState([]);
   const { state, dispatch } = useContext(context);
   const history = useHistory();
   const location = useLocation();
+
+  useEffect(() => {
+    console.log(state);
+  });
 
   const createMenu = (data) => {
     return data.map((v) => {
@@ -36,6 +38,7 @@ const Sidebar = (): JSX.Element => {
   };
 
   const createMunuItemElement = (title, superPath, path) => {
+    if (title === "404") return;
     return (
       <Menu.Item
         key={title}
@@ -65,20 +68,20 @@ const Sidebar = (): JSX.Element => {
     }
   };
 
-  useEffect(() => {
-    axios.get("http://localhost:8000/api/getSiderBar").then((r) => {
-      // console.log(r);
-      if (r.status == 200) {
-        setSidebarData([...r.data]);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   axios.get("http://localhost:8000/api/getSiderBar").then((r) => {
+  //     // console.log(r);
+  //     if (r.status == 200) {
+  //       setSidebarData([...r.data]);
+  //     }
+  //   });
+  // }, []);
 
   return (
     <>
       {state.showSidebar && (
         <Menu style={{ width: 256, height: "100%" }} mode="inline">
-          {sidebarData && createMenu(sidebarData)}
+          {state.sidebar && createMenu(state.sidebar)}
         </Menu>
       )}
     </>

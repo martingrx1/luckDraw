@@ -6,7 +6,8 @@ type Action = {
 type State = {};
 
 type Payload = {
-  imgUrl: string;
+  imgUrl?: string;
+  sidebar?: Array;
 };
 
 type Reducer = (state: State, action: Action) => object;
