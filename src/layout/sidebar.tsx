@@ -1,49 +1,64 @@
 import { useState, useEffect, useContext } from "react";
 import { Menu } from "antd";
-import axios from "axios";
 import { context } from "../store";
 import { useHistory, useLocation } from "react-router-dom";
-import MenuItem from "antd/lib/menu/MenuItem";
-import { JoinPath } from "../utils/path";
+import routes from '../route/index'
 const { SubMenu } = Menu;
 
-type SidebarItem = {
-  key: String;
-  title: String;
-  children?: SidebarItem[];
+
+import Route from "../route/types/index";
+
+type MenuItem = {
+  title: String,
+  path:String,
+  key: String
 };
 
-const Sidebar = (): JSX.Element => {
+
+
+const Sidebar = () => {
   const { state, dispatch } = useContext(context);
   const history = useHistory();
   const location = useLocation();
 
-  useEffect(() => {
-    console.log(state);
+const extractSiderbarData = (routes: Route[]): MenuItem[] => {
+  return routes.map((r) => {
+    return {
+      title: r.title,
+      path:r.path,
+      key: r.title
+    };
   });
+};
 
-  const createMenu = (data) => {
+
+
+  const createMenu = () => {
+    let data = extractSiderbarData(routes[0].routes)
     return data.map((v) => {
-      if (v.children) return createSubMenu(v);
-      else return createMenuItem(v);
+      // if (v.children) return createSubMenu(v);
+      // else return 
+     return createMenuItem(v);
     });
   };
 
-  const createSubMenu = (data) => {
-    return (
-      <SubMenu title={data.title}>
-        {data.children && createMenuItem(undefined, data.path, data.children)}
-      </SubMenu>
-    );
-  };
+  // const createSubMenu = (data) => {
+  //   return (
+  //     <SubMenu title={data.title}>
+  //       {data.children && createMenuItem(undefined, data.path, data.children)}
+  //     </SubMenu>
+  //   );
+  // };
 
-  const createMunuItemElement = (title, superPath, path) => {
+  const createMunuItemElement = (title, path) => {
     if (title === "404") return;
     return (
       <Menu.Item
         key={title}
         onClick={() => {
-          history.push(JoinPath(superPath, path));
+          console.log(path);
+          
+          history.push(path);
           dispatch({
             type: "changeNavTitle",
             payload: {
@@ -58,30 +73,24 @@ const Sidebar = (): JSX.Element => {
   };
 
   const createMenuItem = (data, path = "", list = []) => {
-    if (list.length > 0) {
-      return list.map((v) => {
-        if (v.children) return createSubMenu(v);
-        else return createMunuItemElement(v.title, path, v.path);
-      });
-    } else {
-      return createMunuItemElement(data.title, data.path, path);
-    }
+    // if (list.length > 0) {
+    //   return list.map((v) => {
+    //     if (v.children) return createSubMenu(v);
+    //     else return createMunuItemElement(v.title, path, v.path);
+    //   });
+    // } else {
+    //   return createMunuItemElement(data.title, data.path, path);
+    // }
+    return createMunuItemElement(data.title, data.path);
+
   };
 
-  // useEffect(() => {
-  //   axios.get("http://localhost:8000/api/getSiderBar").then((r) => {
-  //     // console.log(r);
-  //     if (r.status == 200) {
-  //       setSidebarData([...r.data]);
-  //     }
-  //   });
-  // }, []);
 
   return (
     <>
       {state.showSidebar && (
         <Menu style={{ width: 256, height: "100%" }} mode="inline">
-          {state.sidebar && createMenu(state.sidebar)}
+          {createMenu()}
         </Menu>
       )}
     </>

@@ -1,10 +1,10 @@
 import { Upload, message, Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
-const FileUploader = () => {
-  const props = {
+const FileUploader = (props) => {
+  const uploadConfig = {
     name: "file",
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+    action: "http://localhost:4000/api/upload",
     headers: {
       authorization: "authorization-text",
     },
@@ -14,13 +14,14 @@ const FileUploader = () => {
       }
       if (info.file.status === "done") {
         message.success(`${info.file.name} file uploaded successfully`);
+        props.uploaded(info.file.response.filePath);
       } else if (info.file.status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
   };
   return (
-    <Upload {...props}>
+    <Upload {...uploadConfig}>
       <Button icon={<UploadOutlined />}>Click to Upload</Button>
     </Upload>
   );
