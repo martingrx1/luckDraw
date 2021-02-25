@@ -12,8 +12,8 @@ import {
   message,
   Select,
 } from "antd";
-import { collegelist, majorlist } from "./config";
-import { formattedGqlQuery } from "../../utils/graphql";
+import { collegelist, majorlist } from "../../config/school";
+import { formattedGqlInputParams } from "../../utils/graphql";
 
 function UploadPaper(props) {
   const { Option } = Select;
@@ -32,39 +32,24 @@ function UploadPaper(props) {
       message.info("未上传试卷");
       return;
     }
-
-    const mutation = (
-      actions: string | [string],
-      params: string | [Object]
-    ): string => {
-      // query: `mutation{uploadPaper(input:${formattedGqlQuery(
-      //   peperData
-      // )})}`
-      let base = "mutation{";
-      let cpActions = Array.isArray(actions) ? actions : [actions];
-
-      return cpActions.reduce((pre, cur, i) => {
-        return pre + `${cur}(input:${formattedGqlQuery(params[i])}) `;
-      }, base);
-    };
-
-    console.log(mutation("upload", [e]));
-
-    let peperData = { ...e, filePath };
-
     axios
       .post(
         "http://localhost:4000/graphql",
         {},
         {
           params: {
-            query: mutation("uploadPaper", [e]),
+            query: `mutation{
+              uploadPaper(input:{${formattedGqlInputParams({
+                ...e,
+                filePath,
+              })}}){
+                id
+              }
+            }`,
           },
         }
       )
-      .then((res) => {
-        console.log("res", res);
-      });
+      .then(console.log);
   }
   return (
     <>
@@ -83,29 +68,30 @@ function UploadPaper(props) {
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          label="所属学院"
-          name="college"
-          rules={[{ required: true, message: "选择学院" }]}
-        >
-          <Select placeholder="Please select a country">
-            <Option value="china">China</Option>
-            <Option value="usa">U.S.A</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          label="所属专业"
-          name="major"
-          rules={[{ required: true, message: "选择专业" }]}
-        >
+        {/* <Form.Item label="所属学院" name="college" rules={[{required: true, message: '选择学院'}]}>
           <Select
             showSearch
-            style={{ width: 200 }}
-            placeholder={""}
+            style={{width: 200}}
+            placeholder={''}
             optionFilterProp="children"
-            filterOption={(input, option) =>
-              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
+            filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          >
+            {collegelist.map((v) => {
+              return (
+                <Option value={v.value} key={v.value}>
+                  {v.title}
+                </Option>
+              );
+            })}
+          </Select>
+        </Form.Item>
+        <Form.Item label="所属专业" name="major" rules={[{required: true, message: '选择专业'}]}>
+          <Select
+            showSearch
+            style={{width: 200}}
+            placeholder={''}
+            optionFilterProp="children"
+            filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
           >
             {majorlist.map((v) => {
               return (
@@ -115,7 +101,7 @@ function UploadPaper(props) {
               );
             })}
           </Select>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label="试卷类型"
@@ -151,7 +137,7 @@ function UploadPaper(props) {
         </Form.Item>
         <Form.Item label="上传文件">
           <Uploader
-            uploaded={(filepath) => {
+            uploaded={(filePath) => {
               setFilePath(filePath);
               setIsuploaded(true);
             }}

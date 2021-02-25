@@ -13,8 +13,10 @@ const FileUploader = (props) => {
         console.log(info.file, info.fileList);
       }
       if (info.file.status === "done") {
+        console.log(info);
+
         message.success(`${info.file.name} file uploaded successfully`);
-        props.uploaded(info.file.response.filePath);
+        props.uploaded(info.file.response.content.filePath);
       } else if (info.file.status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }

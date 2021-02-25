@@ -1,5 +1,5 @@
 /**
- * @file 具体表单数据配置
+ * @file 学校列表配置项
  * @author linbingchen@baidu.com
  */
 
@@ -18,14 +18,6 @@ const collegelist = [
   },
 ];
 
-const majorlist = [
-  {
-    title: "计算机网络",
-    value: "computer-network",
-    attr: {
-      fromCollege: ["computer"],
-    },
-  },
-];
+const majorlist = [];
 
 export { collegelist, majorlist };
